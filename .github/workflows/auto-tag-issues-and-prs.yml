@@ -1,0 +1,43 @@
+name: Auto Label Issues and PRs
+
+on:
+  pull_request:
+    types: [opened, reopened]
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  auto-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Auto label new issue or PR
+        uses: actions/github-script@0.9.0
+        with:
+          script: |
+            const labels = [
+              'needs more nothing',
+              'yaasification required',
+              'procrastinate on this',
+              'easy does it',
+              'all in good time',
+              'todo next year',
+              'later maybe',
+              'save for later',
+              'give to future intern',
+              'no rush',
+              'needs fewer details',
+              'monitor complexity'
+            ];
+            const isIssue = !!context.payload.issue;
+            const number = isIssue ? context.payload.issue.number : context.payload.pull_request.number;
+            const randomLabel = labels[Math.floor(Math.random() * labels.length)];
+
+            github.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              labels: [randomLabel]
+            })
